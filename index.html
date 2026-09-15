@@ -1,0 +1,645 @@
+<html>
+	<head>
+        <title>Penesiyos</title>
+    </head>   
+    <body>
+
+     </body> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>www.penesiyos.com</title>
+	<style>
+		:root {
+			--discord-dark: #23272a;
+			--discord-darker: #1e2124;
+			--discord-blue: #5865f2;
+			--text: #f2f3f5;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			min-height: 100vh;
+			overflow: hidden;
+			color: var(--text);
+			font-family: Arial, Helvetica, sans-serif;
+			background:
+				radial-gradient(circle at 75% 35%, rgba(88, 101, 242, .18), transparent 24%),
+				linear-gradient(115deg, rgba(19, 20, 24, .9), rgba(35, 39, 42, .94)),
+				repeating-linear-gradient(90deg, #24272c 0 3px, #1d2024 3px 8px);
+		}
+
+		body::after {
+			content: "";
+			position: fixed;
+			inset: 0;
+			pointer-events: none;
+			background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,.65) 100%);
+		}
+
+		.screen {
+			position: relative;
+			min-height: 100vh;
+			padding: clamp(2rem, 8vw, 7rem) clamp(1.5rem, 9vw, 10rem);
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		.brand {
+			position: absolute;
+			top: 2rem;
+			left: clamp(1.5rem, 9vw, 10rem);
+			color: #b9bbbe;
+			font-size: .75rem;
+			letter-spacing: .28em;
+			text-transform: uppercase;
+		}
+
+		h1 {
+			margin: 0 0 2.5rem;
+			max-width: 620px;
+			color: #fff;
+			font-size: clamp(4rem, 12vw, 9rem);
+			line-height: .8;
+			letter-spacing: -.08em;
+			text-shadow: 5px 6px 0 rgba(0,0,0,.35), 0 0 28px rgba(88,101,242,.18);
+			transform: rotate(-2deg);
+		}
+
+		.subtitle {
+			margin: 0 0 2rem 4px;
+			color: #b9bbbe;
+			font-size: .8rem;
+			letter-spacing: .22em;
+			text-transform: uppercase;
+		}
+
+		nav { display: grid; gap: .7rem; width: min(340px, 90vw); }
+
+		button {
+			border: 0;
+			border-left: 4px solid transparent;
+			padding: .8rem 1rem;
+			color: #b9bbbe;
+			background: transparent;
+			cursor: pointer;
+			font: inherit;
+			font-size: 1.15rem;
+			letter-spacing: .12em;
+			text-align: left;
+			text-transform: uppercase;
+			transition: .2s ease;
+		}
+
+		button:hover, button:focus-visible {
+			border-left-color: var(--discord-blue);
+			color: #fff;
+			background: rgba(88, 101, 242, .22);
+			padding-left: 1.4rem;
+			outline: none;
+		}
+
+		.hint {
+			position: absolute;
+			right: clamp(1.5rem, 8vw, 9rem);
+			bottom: 2rem;
+			color: #72767d;
+			font-size: .7rem;
+			letter-spacing: .15em;
+			text-transform: uppercase;
+		}
+
+		.status { color: #5865f2; }
+
+		.members-view {
+			display: none;
+			width: min(620px, 90vw);
+		}
+
+		.members-view.is-visible { display: block; }
+
+		@keyframes members-drop {
+			0% {
+				opacity: 0;
+				transform: translateY(-42vh) scale(.96) rotate(-1deg);
+			}
+			70% { transform: translateY(14px) scale(1.01) rotate(.2deg); }
+			100% {
+				opacity: 1;
+				transform: translateY(0) scale(1) rotate(0);
+			}
+		}
+
+		.members-view.is-entering {
+			animation: none;
+		}
+
+		.members-view.is-entering .members-back {
+			animation: members-title-entrance .56s cubic-bezier(.22, .9, .32, 1.08) both;
+		}
+
+		.members-view.is-entering .member,
+		.members-view.is-entering .members-message {
+			animation: members-drop .58s cubic-bezier(.22, .9, .32, 1.08) both;
+			animation-delay: calc((var(--member-index, 0)) * 55ms + 180ms);
+		}
+
+		.members-view.is-entering .member:nth-child(n) { animation-delay: calc((var(--member-index, 0)) * 55ms + 180ms); }
+
+		@keyframes members-title-entrance {
+			0% {
+				opacity: 0;
+				transform: translateX(18px) scale(.72);
+			}
+			35% {
+				opacity: 1;
+				transform: translateX(8px) scale(.88);
+			}
+			100% {
+				opacity: 1;
+				transform: translateX(0) scale(1);
+			}
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.members-view.is-entering,
+			.members-view.is-entering .members-back,
+			.members-view.is-entering .member,
+			.members-view.is-entering .members-message { animation: none; }
+		}
+
+		.members-header {
+			margin-bottom: 1.5rem;
+		}
+
+		.members-back {
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			gap: .45rem;
+			padding: 0;
+			border: 0;
+			background: transparent;
+			color: #fff;
+			cursor: pointer;
+			font: inherit;
+			font-size: clamp(2rem, 6vw, 4rem);
+			letter-spacing: -.05em;
+			transform-origin: left center;
+		}
+
+		.members-back > span {
+			position: relative;
+			z-index: 1;
+		}
+
+		.members-back:hover,
+		.members-back:focus-visible {
+			color: #b9bbbe;
+			outline: none;
+		}
+
+		.members-back span:first-child {
+			font-size: .9em;
+			line-height: 1;
+		}
+
+		.members-list { display: grid; gap: .65rem; max-height: 55vh; overflow-y: auto; }
+
+		.member {
+			display: flex;
+			align-items: center;
+			gap: .85rem;
+			padding: .65rem .8rem;
+			background: rgba(30, 33, 36, .7);
+		}
+
+		.member-avatar {
+			width: 38px;
+			height: 38px;
+			border-radius: 50%;
+			object-fit: cover;
+			background: var(--discord-blue);
+			color: #fff;
+			display: grid;
+			place-items: center;
+			font-weight: bold;
+		}
+
+		.member-name { color: #fff; }
+		.member-bot { margin-left: .5rem; color: #5865f2; font-size: .7rem; text-transform: uppercase; }
+		.members-message { color: #b9bbbe; }
+
+		.extras-view {
+			display: none;
+			width: min(1180px, 92vw);
+		}
+
+		.extras-view.is-visible { display: block; }
+
+		.extras-header {
+			display: flex;
+			align-items: end;
+			justify-content: space-between;
+			gap: 1rem;
+			margin-bottom: 1.5rem;
+		}
+
+		.extras-title {
+			margin: 0;
+			color: #fff;
+			font-size: clamp(2.2rem, 7vw, 4.5rem);
+			letter-spacing: -.06em;
+		}
+
+		.extras-subtitle {
+			margin: .35rem 0 0;
+			color: #9297a3;
+			font-size: .75rem;
+			letter-spacing: .18em;
+			text-transform: uppercase;
+		}
+
+		.gallery-layout {
+			display: grid;
+			grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+			gap: 1.25rem;
+			align-items: start;
+		}
+
+		.photo-grid {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 1rem;
+			max-height: 58vh;
+			overflow-y: auto;
+			padding: .25rem;
+		}
+
+		.photo-card {
+			position: relative;
+			margin: 0;
+			aspect-ratio: 1 / 1.12;
+			overflow: hidden;
+			cursor: pointer;
+			border: 1px solid rgba(255,255,255,.1);
+			border-radius: 4px;
+			background: linear-gradient(145deg, rgba(88,101,242,.25), rgba(30,33,36,.9));
+			box-shadow: 0 12px 28px rgba(0,0,0,.28);
+		}
+
+		.photo-card img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform .35s ease, filter .35s ease;
+		}
+
+		.photo-card:hover img { transform: scale(1.06); filter: brightness(1.08); }
+		.photo-card.is-selected { border-color: var(--discord-blue); box-shadow: 0 0 0 2px rgba(88,101,242,.35), 0 12px 28px rgba(0,0,0,.28); }
+		.photo-card:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+		.photo-card figcaption {
+			position: absolute;
+			inset: auto 0 0;
+			padding: 2.5rem .8rem .7rem;
+			color: #fff;
+			background: linear-gradient(transparent, rgba(0,0,0,.8));
+			font-size: .8rem;
+			letter-spacing: .08em;
+		}
+
+		.photo-detail {
+			min-height: 58vh;
+			border: 1px solid rgba(255,255,255,.1);
+			border-radius: 4px;
+			background: rgba(30,33,36,.7);
+			box-shadow: 0 12px 28px rgba(0,0,0,.28);
+			display: grid;
+			place-items: center;
+			overflow: hidden;
+		}
+
+		.photo-detail img {
+			width: 100%;
+			height: 100%;
+			max-height: 58vh;
+			object-fit: contain;
+		}
+
+		.photo-detail figcaption {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			padding: 1rem;
+			color: #fff;
+			font-size: 1rem;
+			letter-spacing: .08em;
+			background: linear-gradient(transparent, rgba(0,0,0,.85));
+			width: 100%;
+		}
+
+		.photo-detail:has(img) { position: relative; }
+
+		.photo-detail-placeholder {
+			padding: 2rem;
+			color: #9297a3;
+			font-size: .8rem;
+			letter-spacing: .15em;
+			text-align: center;
+			text-transform: uppercase;
+		}
+
+		.back-button::before {
+			content: "←";
+			margin-right: .55rem;
+			font-size: 1.3em;
+			vertical-align: -1px;
+		}
+
+		@media (max-width: 600px) {
+			.screen { padding-top: 8rem; }
+			.hint { position: static; margin-top: 3rem; }
+			.gallery-layout { grid-template-columns: 1fr; }
+			.photo-detail { min-height: 40vh; order: -1; }
+			.photo-detail img { max-height: 40vh; }
+		}
+	</style>
+</head>
+<body>
+	<audio id="bg-music" src="music/somehow%20this%20became%20your%20background%20music.mp3" loop preload="auto"></audio>
+	<audio id="preclick-sound" src="music/preclick.mp3" preload="auto"></audio>
+	<audio id="click-sound" src="music/click.mp3" preload="auto"></audio>
+	<button id="music-toggle" type="button" aria-label="Reproducir música" style="position:fixed;top:16px;right:16px;z-index:9999;padding:.7rem 1rem;border:1px solid rgba(255,255,255,.25);background:rgba(20,22,28,.85);color:#fff;border-radius:999px;cursor:pointer;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 8px 20px rgba(0,0,0,.25);">🔊 Music</button>
+	<script>
+		const backgroundMusic = document.getElementById('bg-music');
+		const musicToggle = document.getElementById('music-toggle');
+		const preclickSound = document.getElementById('preclick-sound');
+		const clickSound = document.getElementById('click-sound');
+		let hoverCooldown = 0;
+		let startedOnce = false;
+		const updateMusicButton = () => {
+			if (!musicToggle) return;
+			musicToggle.textContent = backgroundMusic && !backgroundMusic.paused ? '🔇 Mute' : '🔊 Music';
+		};
+		const playAudioOnce = (audioEl, volume = 0.55) => {
+			if (!audioEl) return;
+			try {
+				audioEl.volume = volume;
+				audioEl.currentTime = 0;
+				audioEl.play().catch(() => {});
+			} catch (error) {
+				console.warn('Sound failed to play:', error);
+			}
+		};
+		const startMusic = async () => {
+			if (!backgroundMusic) return;
+			backgroundMusic.volume = 0.45;
+			try {
+				await backgroundMusic.play();
+				startedOnce = true;
+				updateMusicButton();
+			} catch (error) {
+				console.warn('Audio blocked until user interaction:', error);
+			}
+		};
+		const stopMusic = () => {
+			if (!backgroundMusic) return;
+			backgroundMusic.pause();
+			updateMusicButton();
+		};
+		const unlockAudio = async () => {
+			if (!startedOnce) {
+				await startMusic();
+			}
+		};
+		if (musicToggle) {
+			musicToggle.addEventListener('click', async (event) => {
+				event.stopPropagation();
+				if (backgroundMusic && !backgroundMusic.paused) {
+					stopMusic();
+				} else {
+					await startMusic();
+				}
+			});
+		}
+		if (backgroundMusic) {
+			backgroundMusic.addEventListener('ended', () => {
+				backgroundMusic.currentTime = 0;
+				backgroundMusic.play().catch(() => {});
+			});
+		}
+	
+document.addEventListener('pointerdown', unlockAudio, { once: true });
+	
+document.addEventListener('keydown', unlockAudio, { once: true });
+		document.querySelectorAll('button').forEach((button) => {
+			const triggerPreclick = (event) => {
+				if (button.id === 'music-toggle') return;
+				if (event.type === 'mouseenter' || event.type === 'mouseover') {
+					const now = performance.now();
+					if (now < hoverCooldown) return;
+					hoverCooldown = now + 180;
+				}
+				if (startedOnce) {
+					playAudioOnce(preclickSound, 0.78);
+				}
+			};
+			button.addEventListener('mouseenter', triggerPreclick);
+			button.addEventListener('mouseover', triggerPreclick);
+			button.addEventListener('focus', triggerPreclick);
+			button.addEventListener('pointerdown', (event) => {
+				if (button.id === 'music-toggle') return;
+				if (startedOnce) {
+					playAudioOnce(clickSound, 1);
+				}
+				event.stopPropagation();
+			});
+			button.addEventListener('click', (event) => {
+				if (button.id === 'music-toggle') return;
+				event.stopPropagation();
+			});
+		});
+		updateMusicButton();
+	</script>
+	<main class="screen">
+		<div class="brand">A Discord-inspired server</div>
+		<p class="subtitle">Welcome to </p>
+		<h1>Penesiyos</h1>
+		<nav aria-label="Main menu">
+			<button type="button" data-action="start">Members</button>
+			<button type="button" data-action="continue">News </button>
+			<button type="button" data-action="options">Extras and shit</button>
+		</nav>
+		<section class="extras-view" aria-live="polite" aria-hidden="true">
+			<div class="extras-header">
+				<div>
+					<h2 class="extras-title">Extras</h2>
+					<p class="extras-subtitle">Gallery · E N S/</p>
+				</div>
+				<button type="button" class="extras-back">Back</button>
+			</div>
+			<div class="gallery-layout">
+				<div class="photo-grid">
+				<figure class="photo-card"><img src="E%20N%20S/Bed.jpeg" alt="Bed"><figcaption>Bed</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Fucking%20gorda.jpeg" alt="Fucking gorda"><figcaption>Fucking gorda</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Hello%20neighboor.jpeg" alt="Hello neighboor"><figcaption>Hello neighboor</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Hombre.jpeg" alt="Hombre"><figcaption>Hombre</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Kiss.jpeg" alt="Kiss"><figcaption>Kiss</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Kiss%C2%B2.jpeg" alt="Kiss²"><figcaption>Kiss²</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Machete.jpeg" alt="Machete"><figcaption>Machete</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Mujer.jpeg" alt="Mujer"><figcaption>Mujer</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Ohh%20shittings.jpeg" alt="Ohh shittings"><figcaption>Ohh shittings</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/The%20Look.jpeg" alt="The Look"><figcaption>The Look</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/The%20stalker.jpeg" alt="The stalker"><figcaption>The stalker</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Touching.jpeg" alt="Touching"><figcaption>Touching</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/Waiting.jpeg" alt="Waiting"><figcaption>Waiting</figcaption></figure>
+				<figure class="photo-card"><img src="E%20N%20S/War%20without%20reason.jpeg" alt="War without reason"><figcaption>War without reason</figcaption></figure>
+				</div>
+				<figure class="photo-detail" aria-live="polite">
+					<div class="photo-detail-placeholder">Click a photo to view it</div>
+				</figure>
+			</div>
+		</section>
+		<section class="members-view" aria-live="polite" aria-hidden="true">
+			<div class="members-header">
+				<button type="button" class="members-back" aria-label="Volver al inicio">
+					<span aria-hidden="true">←</span>
+					<span>Members</span>
+				</button>
+			</div>
+			<div class="members-list"></div>
+			<button type="button" class="back-button">Back</button>
+		</section>
+		<div class="hint">Night 1 &nbsp;•&nbsp; <span class="status">System ready</span></div>
+	</main>
+	<script>
+		const menu = document.querySelector('nav');
+		const membersView = document.querySelector('.members-view');
+		const membersList = document.querySelector('.members-list');
+		const extrasView = document.querySelector('.extras-view');
+		const photoDetail = document.querySelector('.photo-detail');
+		const photoCards = document.querySelectorAll('.photo-card');
+		photoCards.forEach((card) => {
+			card.tabIndex = 0;
+			card.setAttribute('role', 'button');
+			const selectPhoto = () => {
+				photoCards.forEach((item) => item.classList.remove('is-selected'));
+				card.classList.add('is-selected');
+				const image = card.querySelector('img');
+				const caption = card.querySelector('figcaption').textContent;
+				photoDetail.innerHTML = `<img src="${image.src}" alt="${image.alt}"><figcaption>${caption}</figcaption>`;
+			};
+			card.addEventListener('click', selectPhoto);
+			card.addEventListener('keydown', (event) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					selectPhoto();
+				}
+			});
+		});
+		const showExtras = () => {
+			menu.style.display = 'none';
+			membersView.classList.remove('is-visible');
+			extrasView.classList.add('is-visible');
+			extrasView.setAttribute('aria-hidden', 'false');
+		};
+		const hideExtras = () => {
+			extrasView.classList.remove('is-visible');
+			extrasView.setAttribute('aria-hidden', 'true');
+			menu.style.display = 'grid';
+		};
+
+		function showMembersView() {
+			menu.style.display = 'none';
+			membersView.classList.add('is-visible');
+			membersView.classList.remove('is-entering');
+			void membersView.offsetWidth;
+			membersView.classList.add('is-entering');
+			membersView.setAttribute('aria-hidden', 'false');
+			membersList.innerHTML = '<p class="members-message">Loading members...</p>';
+			fetch('https://tight-shape-77cf.josemariobarberan.workers.dev/members')
+				.then((response) => {
+					if (!response.ok) throw new Error('Request failed');
+					return response.json();
+				})
+				.then((payload) => {
+					const members = Array.isArray(payload)
+						? payload
+						: Array.isArray(payload?.members)
+							? payload.members
+							: [];
+
+					membersList.replaceChildren();
+
+					if (!members.length) {
+						membersList.innerHTML = '<p class="members-message">No members available</p>';
+						return;
+					}
+
+					members.forEach((member, index) => {
+						const user = member.user || member;
+						const name = member.display_name || user.display_name || user.username || 'Unknown member';
+						const item = document.createElement('div');
+						item.className = 'member';
+						item.style.setProperty('--member-index', index);
+
+						const avatar = document.createElement(user.avatar && user.id ? 'img' : 'div');
+						avatar.className = 'member-avatar';
+						if (avatar.tagName === 'IMG') {
+							avatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+							avatar.alt = '';
+						} else {
+							avatar.textContent = name.charAt(0).toUpperCase();
+						}
+
+						const label = document.createElement('span');
+						label.className = 'member-name';
+						label.textContent = name;
+
+						if (user.bot === true) {
+							const bot = document.createElement('span');
+							bot.className = 'member-bot';
+							bot.textContent = 'Bot';
+							label.append(bot);
+						}
+
+						item.append(avatar, label);
+						membersList.append(item);
+					});
+				})
+				.catch(() => {
+					membersList.innerHTML = '<p class="members-message">Could not load members</p>';
+				});
+		}
+
+		const goBackToMenu = () => {
+			membersView.classList.remove('is-entering');
+			membersView.classList.remove('is-visible');
+			membersView.setAttribute('aria-hidden', 'true');
+			menu.style.display = 'grid';
+		};
+
+		document.querySelector('.back-button').addEventListener('click', goBackToMenu);
+		document.querySelector('.members-back').addEventListener('click', goBackToMenu);
+		document.querySelector('.extras-back').addEventListener('click', hideExtras);
+
+		document.querySelectorAll('nav button').forEach((button) => {
+			button.addEventListener('click', () => {
+				const action = button.dataset.action;
+				if (action === 'start') {
+					showMembersView();
+				} else if (action === 'options') {
+					showExtras();
+				}
+			});
+		});
+	</script>
+</body>
+</html>
+
